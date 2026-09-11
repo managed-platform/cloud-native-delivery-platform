@@ -36,7 +36,7 @@ spec:
       containers:
         - name: app
 
-          image: docker.io/mashhood101/cloud-native-delivery-platform@sha256:REPLACE_ME
+          image: docker.io/mashhood101/cloud-native-delivery-platform:placeholder
 
           imagePullPolicy: IfNotPresent
 
