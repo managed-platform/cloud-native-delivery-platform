@@ -55,18 +55,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    outputs:
+      image_digest: ${{ steps.build.outputs.digest }}
+      image_tag: ${{ github.sha }}
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e
 
       - name: Login to container registry
         if: github.event_name == 'push'
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
         with:
           registry: ${{ vars.REGISTRY_HOST }}
           username: ${{ secrets.REGISTRY_USERNAME }}
@@ -74,7 +78,7 @@ jobs:
 
       - name: Build container image
         id: build
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
         with:
           context: .
           file: ./Dockerfile
@@ -84,8 +88,9 @@ jobs:
           cache-from: type=gha,scope=main
           cache-to: ${{ github.event_name == 'push' && 'type=gha,scope=main,mode=max' || '' }}
 
-      - name: Print published image digest
+      - name: Record published image
         if: github.event_name == 'push'
         run: |
-          echo "Image: ${{ vars.REGISTRY_HOST }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}"
-          echo "Digest: ${{ steps.build.outputs.digest }}"
+          echo "Image tag: ${{ vars.REGISTRY_HOST }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}"
+          echo "Image digest: ${{ steps.build.outputs.digest }}"
+          echo "Immutable reference: ${{ vars.REGISTRY_HOST }}/${{ vars.IMAGE_NAME }}@${{ steps.build.outputs.digest }}"
