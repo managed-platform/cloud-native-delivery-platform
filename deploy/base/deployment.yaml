@@ -33,12 +33,20 @@ spec:
         seccompProfile:
           type: RuntimeDefault
 
+      volumes:
+        - name: tmp
+          emptyDir: {}
+
       containers:
         - name: app
 
           image: docker.io/mashhood101/cloud-native-delivery-platform:placeholder
 
           imagePullPolicy: IfNotPresent
+
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
 
           ports:
             - name: http
