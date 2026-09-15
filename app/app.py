@@ -9,13 +9,13 @@ app = Flask(__name__)
 HTTP_REQUESTS_TOTAL = Counter(
     "cloud_native_platform_http_requests_total",
     "Total number of HTTP requests",
-    ["method", "endpoint", "status"],
+    ["method", "route", "status"],
 )
 
 HTTP_REQUEST_DURATION_SECONDS = Histogram(
     "cloud_native_platform_http_request_duration_seconds",
     "HTTP request duration in seconds",
-    ["method", "endpoint"],
+    ["method", "route"],
 )
 
 
@@ -27,17 +27,17 @@ def start_request_timer():
 @app.after_request
 def record_request_metrics(response):
     if request.path != "/metrics":
-        endpoint = request.url_rule.rule if request.url_rule else "unknown"
+        route = request.url_rule.rule if request.url_rule else "unknown"
 
         HTTP_REQUESTS_TOTAL.labels(
             method=request.method,
-            endpoint=endpoint,
+            route=route,
             status=response.status_code,
         ).inc()
 
         HTTP_REQUEST_DURATION_SECONDS.labels(
             method=request.method,
-            endpoint=endpoint,
+            route=route,
         ).observe(time.perf_counter() - request.start_time)
 
     return response
