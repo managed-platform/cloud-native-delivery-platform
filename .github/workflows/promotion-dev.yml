@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Validate promotion input
         shell: bash
@@ -58,6 +58,10 @@ jobs:
             "s|^[[:space:]]*digest: sha256:[a-f0-9]\{64\}|    digest: ${IMAGE_DIGEST}|" \
             "$FILE"
 
+          if [[ -n "$(tail -c 1 "$FILE")" ]]; then
+            printf '\n' >> "$FILE"
+          fi
+
           grep -F "digest: ${IMAGE_DIGEST}" "$FILE"
 
       - name: Verify promotion change
@@ -75,3 +79,65 @@ jobs:
 
           git diff --check
           git diff -- deploy/overlays/dev/kustomization.yaml
+
+      - name: Create promotion branch
+        id: branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SOURCE_SHA="${{ inputs.source_sha }}"
+          SHORT_SHA="${SOURCE_SHA:0:7}"
+          BRANCH_NAME="automation/promote-dev-${SHORT_SHA}"
+
+          git checkout -b "$BRANCH_NAME"
+
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Commit DEV promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add deploy/overlays/dev/kustomization.yaml
+
+          git commit \
+            -m "chore: promote application image to dev"
+
+      - name: Push promotion branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git push --set-upstream origin "${{ steps.branch.outputs.branch_name }}"
+
+      - name: Create DEV promotion pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ steps.branch.outputs.branch_name }}
+          IMAGE_DIGEST: ${{ inputs.image_digest }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh pr create \
+            --base main \
+            --head "$BRANCH_NAME" \
+            --title "Promote application image to DEV" \
+            --body "## Summary
+
+          Promotes the application image produced from source commit \`$SOURCE_SHA\` to DEV.
+
+          ## Image
+
+          \`$IMAGE_DIGEST\`
+
+          ## Changes
+
+          - Updates the DEV Kustomize image digest.
+          - Preserves the immutable image produced by CI.
+          - Does not rebuild the application image."

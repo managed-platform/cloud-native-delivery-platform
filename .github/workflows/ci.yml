@@ -112,6 +112,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: container
 
+    permissions:
+      contents: write
+      pull-requests: write
+
     uses: ./.github/workflows/promotion-dev.yml
 
     with:
