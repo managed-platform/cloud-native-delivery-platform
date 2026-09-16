@@ -55,7 +55,7 @@ def home():
     return jsonify({
         "service": "cloud-native-platform",
         "status": "running",
-        "deployment_validation": "enabled"
+        "deployment_validation": "offline"
     }), 200
 
 @app.route("/health")
