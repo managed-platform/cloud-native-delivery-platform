@@ -9,4 +9,4 @@ resources:
 
 images:
   - name: docker.io/mashhood101/cloud-native-delivery-platform
-    digest: sha256:33f5a03e3e085e5d28bca521c2c2bb55d61c3c0595a28723d7ad0ad412fc4c1f
+    digest: sha256:d47cf145a19f182eaa7fefdc0125df2402567b4a7f9fae51d0c59770ce7ce561
