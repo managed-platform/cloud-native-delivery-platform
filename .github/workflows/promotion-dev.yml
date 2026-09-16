@@ -19,6 +19,11 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
       - name: Validate promotion input
         shell: bash
         run: |
@@ -40,3 +45,33 @@ jobs:
           echo "DEV promotion input validated."
           echo "Source SHA: $SOURCE_SHA"
           echo "Image digest: $IMAGE_DIGEST"
+
+      - name: Update DEV image digest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          FILE="deploy/overlays/dev/kustomization.yaml"
+          IMAGE_DIGEST="${{ inputs.image_digest }}"
+
+          sed -i \
+            "s|^[[:space:]]*digest: sha256:[a-f0-9]\{64\}|    digest: ${IMAGE_DIGEST}|" \
+            "$FILE"
+
+          grep -F "digest: ${IMAGE_DIGEST}" "$FILE"
+
+      - name: Verify promotion change
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CHANGED_FILES="$(git diff --name-only)"
+
+          if [[ "$CHANGED_FILES" != "deploy/overlays/dev/kustomization.yaml" ]]; then
+            echo "Unexpected files changed:"
+            echo "$CHANGED_FILES"
+            exit 1
+          fi
+
+          git diff --check
+          git diff -- deploy/overlays/dev/kustomization.yaml

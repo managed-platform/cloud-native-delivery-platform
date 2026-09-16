@@ -9,6 +9,7 @@ on:
       - "Dockerfile"
       - ".dockerignore"
       - ".github/workflows/ci.yml"
+      - ".github/workflows/promotion-*.yml"
 
   push:
     branches:
@@ -18,6 +19,7 @@ on:
       - "Dockerfile"
       - ".dockerignore"
       - ".github/workflows/ci.yml"
+      - ".github/workflows/promotion-*.yml"
 
 permissions:
   contents: read
