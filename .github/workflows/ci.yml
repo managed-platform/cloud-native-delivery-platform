@@ -104,3 +104,14 @@ jobs:
           echo "Image tag: ${{ vars.REGISTRY_HOST }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}"
           echo "Image digest: ${{ steps.build.outputs.digest }}"
           echo "Immutable reference: ${{ vars.REGISTRY_HOST }}/${{ vars.IMAGE_NAME }}@${{ steps.build.outputs.digest }}"
+
+  promote-dev:
+    name: Promote Image to DEV
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: container
+
+    uses: ./.github/workflows/promotion-dev.yml
+
+    with:
+      image_digest: ${{ needs.container.outputs.image_digest }}
+      source_sha: ${{ github.sha }}

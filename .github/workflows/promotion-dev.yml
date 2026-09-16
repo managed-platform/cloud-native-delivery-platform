@@ -1,0 +1,42 @@
+name: DEV Promotion
+
+on:
+  workflow_call:
+    inputs:
+      image_digest:
+        description: Immutable container image digest
+        required: true
+        type: string
+      source_sha:
+        description: Source commit that produced the image
+        required: true
+        type: string
+
+jobs:
+  prepare:
+    name: Prepare DEV Promotion
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Validate promotion input
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          IMAGE_DIGEST="${{ inputs.image_digest }}"
+          SOURCE_SHA="${{ inputs.source_sha }}"
+
+          if [[ ! "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+            echo "Invalid image digest: $IMAGE_DIGEST"
+            exit 1
+          fi
+
+          if [[ ! "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "Invalid source SHA: $SOURCE_SHA"
+            exit 1
+          fi
+
+          echo "DEV promotion input validated."
+          echo "Source SHA: $SOURCE_SHA"
+          echo "Image digest: $IMAGE_DIGEST"
