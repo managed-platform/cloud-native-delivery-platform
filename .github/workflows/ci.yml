@@ -10,7 +10,7 @@ on:
       - ".dockerignore"
       - ".github/workflows/ci.yml"
       - ".github/workflows/promotion-*.yml"
-q
+
   push:
     branches:
       - main
