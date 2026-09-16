@@ -1,0 +1,40 @@
+name: Deployment Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "deploy/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-dev:
+    name: Validate DEV Deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify kubectl
+        run: kubectl version --client
+
+      - name: Render DEV manifests
+        run: kubectl kustomize deploy/overlays/dev
+
+      - name: Validate DEV manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl kustomize deploy/overlays/dev \
+            | kubectl apply \
+                --dry-run=client \
+                --validate=false \
+                -f -

@@ -54,9 +54,9 @@ def record_request_metrics(response):
 def home():
     return jsonify({
         "service": "cloud-native-platform",
-        "status": "running"
+        "status": "running",
+        "deployment_validation": "enabled"
     }), 200
-
 
 @app.route("/health")
 def health():
