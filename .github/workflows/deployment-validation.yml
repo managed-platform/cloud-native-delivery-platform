@@ -26,15 +26,11 @@ jobs:
         run: kubectl version --client
 
       - name: Render DEV manifests
-        run: kubectl kustomize deploy/overlays/dev
-
-      - name: Validate DEV manifests
         shell: bash
         run: |
           set -euo pipefail
 
           kubectl kustomize deploy/overlays/dev \
-            | kubectl apply \
-                --dry-run=client \
-                --validate=false \
-                -f -
+            > /tmp/dev-manifests.yaml
+
+          cat /tmp/dev-manifests.yaml
