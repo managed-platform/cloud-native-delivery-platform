@@ -121,3 +121,6 @@ jobs:
     with:
       image_digest: ${{ needs.container.outputs.image_digest }}
       source_sha: ${{ github.sha }}
+
+    secrets:
+      promotion_app_private_key: ${{ secrets.PROMOTION_APP_PRIVATE_KEY }}
