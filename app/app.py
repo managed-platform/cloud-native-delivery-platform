@@ -1,7 +1,14 @@
 import time
 
 from flask import Flask, Response, jsonify, request
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    CollectorRegistry,
+    Counter,
+    Histogram,
+    generate_latest,
+    multiprocess,
+)
 
 app = Flask(__name__)
 
@@ -74,8 +81,11 @@ def error():
 
 @app.route("/metrics")
 def metrics():
+    registry = CollectorRegistry()
+    multiprocess.MultiProcessCollector(registry)
+
     return Response(
-        generate_latest(),
+        generate_latest(registry),
         mimetype=CONTENT_TYPE_LATEST,
     )
 

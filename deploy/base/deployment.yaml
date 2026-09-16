@@ -30,12 +30,17 @@ spec:
       terminationGracePeriodSeconds: 30
 
       securityContext:
+        fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
 
       volumes:
         - name: tmp
           emptyDir: {}
+
+        - name: prometheus-multiprocess
+          emptyDir: {}
+
 
       containers:
         - name: app
@@ -44,9 +49,16 @@ spec:
 
           imagePullPolicy: IfNotPresent
 
+          env:
+            - name: PROMETHEUS_MULTIPROC_DIR
+              value: /tmp/prometheus
+
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+
+            - name: prometheus-multiprocess
+              mountPath: /tmp/prometheus
 
           ports:
             - name: http
