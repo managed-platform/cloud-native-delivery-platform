@@ -46,3 +46,27 @@ spec:
           annotations:
             summary: "Cloud Native Platform rollout is not progressing"
             description: "Updated replicas remain below the desired replica count."
+
+        - alert: High5xxErrorRate
+          expr: |
+            (
+              sum(
+                rate(
+                  cloud_native_platform_http_requests_total{
+                    status=~"5.."
+                  }[5m]
+                )
+              )
+              /
+              sum(
+                rate(
+                  cloud_native_platform_http_requests_total[5m]
+                )
+              )
+            ) > 0.05
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Cloud Native Platform has a high 5xx error rate
+            description: More than 5% of HTTP requests have returned 5xx responses for 5 minutes.
