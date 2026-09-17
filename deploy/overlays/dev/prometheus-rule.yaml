@@ -22,7 +22,7 @@ spec:
               namespace="cloud-native-platform-dev",
               deployment="cloud-native-platform"
             }
-          for: 30s
+          for: 5m
           labels:
             severity: warning
           annotations:
@@ -40,7 +40,7 @@ spec:
               namespace="cloud-native-platform-dev",
               deployment="cloud-native-platform"
             }
-          for: 30s
+          for: 3m
           labels:
             severity: warning
           annotations:
