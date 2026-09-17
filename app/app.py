@@ -89,6 +89,11 @@ def metrics():
         mimetype=CONTENT_TYPE_LATEST,
     )
 
+@app.get("/slow")
+def slow():
+    time.sleep(1)
+    return {"status": "slow"}
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
