@@ -100,7 +100,7 @@ spec:
 
           livenessProbe:
             httpGet:
-              path: /does-not-exist
+              path: /health
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
