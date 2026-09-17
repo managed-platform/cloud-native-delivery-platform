@@ -28,3 +28,21 @@ spec:
           annotations:
             summary: "Cloud Native Platform has unavailable replicas"
             description: "Available replicas are below the desired replica count for more than 5 minutes."
+
+        - alert: DeploymentRolloutStalled
+          expr: |
+            kube_deployment_status_replicas_updated{
+              namespace="cloud-native-platform-dev",
+              deployment="cloud-native-platform"
+            }
+            <
+            kube_deployment_spec_replicas{
+              namespace="cloud-native-platform-dev",
+              deployment="cloud-native-platform"
+            }
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "Cloud Native Platform rollout is not progressing"
+            description: "Updated replicas remain below the desired replica count."
