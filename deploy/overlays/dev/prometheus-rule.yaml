@@ -50,17 +50,20 @@ spec:
         - alert: High5xxErrorRate
           expr: |
             (
-              sum(
+              sum by (namespace) (
                 rate(
                   cloud_native_platform_http_requests_total{
+                    namespace="cloud-native-platform-dev",
                     status=~"5.."
                   }[5m]
                 )
               )
               /
-              sum(
+              sum by (namespace) (
                 rate(
-                  cloud_native_platform_http_requests_total[5m]
+                  cloud_native_platform_http_requests_total{
+                    namespace="cloud-native-platform-dev"
+                  }[5m]
                 )
               )
             ) > 0.05
