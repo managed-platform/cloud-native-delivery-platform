@@ -6,6 +6,7 @@ namespace: cloud-native-platform-dev
 resources:
   - ../../base
   - namespace.yaml
+  - prometheus-rule.yaml
 
 images:
   - name: docker.io/mashhood101/cloud-native-delivery-platform

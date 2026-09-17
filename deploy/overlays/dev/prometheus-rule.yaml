@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+
+metadata:
+  name: cloud-native-platform-dev-alerts
+  namespace: cloud-native-platform-dev
+  labels:
+    release: kube-prometheus-stack
+
+spec:
+  groups:
+    - name: cloud-native-platform-dev
+      rules:
+        - alert: DeploymentUnavailable
+          expr: |
+            kube_deployment_status_replicas_available{
+              namespace="cloud-native-platform-dev",
+              deployment="cloud-native-platform"
+            }
+            <
+            kube_deployment_spec_replicas{
+              namespace="cloud-native-platform-dev",
+              deployment="cloud-native-platform"
+            }
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Cloud Native Platform has unavailable replicas"
+            description: "Available replicas are below the desired replica count for more than 5 minutes."
