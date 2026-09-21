@@ -89,6 +89,19 @@ def metrics():
         mimetype=CONTENT_TYPE_LATEST,
     )
 
+@app.route("/cpu")
+def cpu():
+    end = time.time() + 2
+    iterations = 0
+
+    while time.time() < end:
+        iterations += 1
+
+    return jsonify({
+        "status": "cpu load generated",
+        "iterations": iterations
+    }), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
