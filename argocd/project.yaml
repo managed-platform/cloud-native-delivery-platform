@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: cloud-native-platform
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  description: Argo CD project for the Cloud Native Delivery Platform
+
+  sourceRepos:
+    - https://github.com/managed-platform/cloud-native-delivery-platform.git
+
+  destinations:
+    - namespace: cloud-native-platform-dev
+      server: https://kubernetes.default.svc
+
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ServiceAccount
+
+    - group: ""
+      kind: Service
+
+    - group: apps
+      kind: Deployment
+
+    - group: policy
+      kind: PodDisruptionBudget
+
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+
+    - group: monitoring.coreos.com
+      kind: ServiceMonitor
+
+    - group: monitoring.coreos.com
+      kind: PrometheusRule
+
+    - group: monitoring.coreos.com
+      kind: AlertmanagerConfig
