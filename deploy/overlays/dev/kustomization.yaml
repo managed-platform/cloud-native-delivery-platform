@@ -5,7 +5,6 @@ namespace: cloud-native-platform-dev
 
 resources:
   - ../../base
-  - namespace.yaml
   - prometheus-rule.yaml
   - alertmanager-config.yaml
 
