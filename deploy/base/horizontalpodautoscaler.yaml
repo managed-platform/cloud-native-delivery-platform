@@ -9,7 +9,7 @@ spec:
     name: cloud-native-platform
 
   minReplicas: 2
-  maxReplicas: 4
+  maxReplica: 4
 
   metrics:
     - type: Resource
