@@ -9,3 +9,4 @@ resources:
   - poddisruptionbudget.yaml
   - horizontalpodautoscaler.yaml
   - networkpolicy.yaml
+  - networkpolicy-egress.yaml
