@@ -34,3 +34,32 @@ jobs:
             > /tmp/dev-manifests.yaml
 
           cat /tmp/dev-manifests.yaml
+
+      - name: Install kubeconform
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          KUBECONFORM_VERSION="v0.8.0"
+
+          curl -fsSL \
+            "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            -o /tmp/kubeconform.tar.gz
+
+          tar -xzf /tmp/kubeconform.tar.gz -C /tmp
+          sudo install /tmp/kubeconform /usr/local/bin/kubeconform
+
+          kubeconform -v
+
+      - name: Validate DEV manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubeconform \
+            -strict \
+            -summary \
+            -kubernetes-version 1.30.14 \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/CustomResourceDefinition/catalog/main/schema/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            /tmp/dev-manifests.yaml
