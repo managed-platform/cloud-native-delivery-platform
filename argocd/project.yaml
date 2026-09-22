@@ -4,8 +4,6 @@ kind: AppProject
 metadata:
   name: cloud-native-platform
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 
 spec:
   description: Argo CD project for the Cloud Native Delivery Platform
