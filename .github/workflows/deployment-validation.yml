@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "deploy/**"
+      - "argocd/**"
 
 permissions:
   contents: read
@@ -63,3 +64,17 @@ jobs:
             -schema-location default \
             -schema-location 'https://raw.githubusercontent.com/CustomResourceDefinition/catalog/main/schema/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
             /tmp/dev-manifests.yaml
+
+      - name: Validate Argo CD manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubeconform \
+            -strict \
+            -summary \
+            -kubernetes-version 1.30.14 \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/CustomResourceDefinition/catalog/main/schema/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            argocd/application-dev.yaml \
+            argocd/project.yaml
