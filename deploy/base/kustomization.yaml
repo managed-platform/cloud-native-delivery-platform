@@ -10,4 +10,3 @@ resources:
   - horizontalpodautoscaler.yaml
   - networkpolicy.yaml
   - networkpolicy-egress.yaml
-  - policy-validation-configmap.yaml
