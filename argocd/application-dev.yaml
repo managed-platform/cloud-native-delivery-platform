@@ -16,3 +16,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: cloud-native-platform-dev
+
+syncPolicy:
+  automated:
+    enabled: true
+    prune: false
+    selfHeal: false
