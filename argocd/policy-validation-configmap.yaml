@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-
-metadata:
-  name: argocd-bootstrap-policy-validation
-  namespace: argocd
