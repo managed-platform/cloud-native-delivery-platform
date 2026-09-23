@@ -1,0 +1,94 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: cloud-native-platform-traefik
+spec:
+  controller: traefik.io/ingress-controller
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-native-platform-traefik
+  namespace: traefik
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloud-native-platform-traefik
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cloud-native-platform-traefik
+    spec:
+      serviceAccountName: traefik-controller
+      nodeSelector:
+        kubernetes.io/hostname: vmi3039186
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: traefik
+          image: traefik:v3.7.13
+          imagePullPolicy: IfNotPresent
+          args:
+            - --providers.kubernetesingress=true
+            - --providers.kubernetesingress.namespaces=argocd
+            - --providers.kubernetesingress.ingressclass=cloud-native-platform-traefik
+            - --entrypoints.web.address=:8000
+            - --entrypoints.health.address=:8082
+            - --ping=true
+            - --ping.entrypoint=health
+          ports:
+            - name: web
+              containerPort: 8000
+              protocol: TCP
+            - name: health
+              containerPort: 8082
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: health
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: health
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud-native-platform-traefik
+  namespace: traefik
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: cloud-native-platform-traefik
+  ports:
+    - name: web
+      port: 80
+      targetPort: web
+      protocol: TCP

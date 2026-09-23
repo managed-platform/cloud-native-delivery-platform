@@ -6,3 +6,5 @@ resources:
   - application-dev.yaml
   - bootstrap-project.yaml
   - default-project.yaml
+  - traefik-project.yaml
+  - traefik-application.yaml

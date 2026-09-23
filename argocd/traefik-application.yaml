@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloud-native-platform-traefik
+  namespace: argocd
+spec:
+  project: cloud-native-platform-traefik
+
+  source:
+    repoURL: https://github.com/managed-platform/cloud-native-delivery-platform.git
+    targetRevision: main
+    path: ingress/traefik
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
+
+  syncPolicy:
+    automated:
+      enabled: true
+      selfHeal: true
+      prune: true
