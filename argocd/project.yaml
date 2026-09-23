@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 
 spec:
-  description: Argo CD project for the Cloud Native Delivery Platform
+  description: Argo CD project for the Cloud Native Delivery Platform DEV environment
 
   sourceRepos:
     - https://github.com/managed-platform/cloud-native-delivery-platform.git
