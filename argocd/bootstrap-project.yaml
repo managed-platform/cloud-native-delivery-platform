@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: argocd-bootstrap-project
+  namespace: argocd
+
+spec:
+  description: Project for managing Argo CD configuration
+
+  sourceRepos:
+    - https://github.com/managed-platform/cloud-native-delivery-platform.git
+
+  destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+
+  namespaceResourceWhitelist:
+    - group: argoproj.io
+      kind: AppProject
+    - group: argoproj.io
+      kind: Application

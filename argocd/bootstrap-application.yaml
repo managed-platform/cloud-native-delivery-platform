@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 
 spec:
-  project: default
+  project: argocd-bootstrap-project
 
   source:
     repoURL: https://github.com/managed-platform/cloud-native-delivery-platform.git
