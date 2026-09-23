@@ -104,16 +104,16 @@ jobs:
         run: |
           set -euo pipefail
 
+          kubectl kustomize argocd > /tmp/argocd-manifests.yaml
+
           kubeconform \
             -strict \
             -summary \
             -kubernetes-version 1.30.14 \
             -schema-location default \
             -schema-location 'https://raw.githubusercontent.com/CustomResourceDefinition/catalog/main/schema/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
-            argocd/application-dev.yaml \
-            argocd/project.yaml \
-            argocd/bootstrap-application.yaml \
-            argocd/bootstrap-project.yaml
+            /tmp/argocd-manifests.yaml \
+            argocd/bootstrap-application.yaml
 
       - name: Validate ingress manifests
         if: steps.changes.outputs.ingress == 'true'
@@ -121,19 +121,11 @@ jobs:
         run: |
           set -euo pipefail
 
-          mapfile -d '' -t manifests < <(
-            find ingress -type f \( -name '*.yaml' -o -name '*.yml' \) -print0
-          )
-
-          if (( ${#manifests[@]} == 0 )); then
-            echo "No ingress manifests found."
-            exit 1
-          fi
+          kubectl kustomize ingress/traefik > /tmp/ingress-manifests.yaml
 
           kubeconform \
             -strict \
             -summary \
             -kubernetes-version 1.30.14 \
             -schema-location default \
-            -schema-location 'https://raw.githubusercontent.com/CustomResourceDefinition/catalog/main/schema/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
-            "${manifests[@]}"
+            /tmp/ingress-manifests.yaml
