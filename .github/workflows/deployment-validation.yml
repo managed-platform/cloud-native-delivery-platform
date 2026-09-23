@@ -105,4 +105,5 @@ jobs:
             -schema-location default \
             -schema-location 'https://raw.githubusercontent.com/CustomResourceDefinition/catalog/main/schema/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
             argocd/application-dev.yaml \
-            argocd/project.yaml
+            argocd/project.yaml \
+            argocd/bootstrap-application.yaml
