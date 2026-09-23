@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 
 spec:
-  description: Project for managing Argo CD configuration
+  description: Project for managing Argo CD configuration through GitOps
 
   sourceRepos:
     - https://github.com/managed-platform/cloud-native-delivery-platform.git
