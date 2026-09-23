@@ -5,3 +5,4 @@ resources:
   - project.yaml
   - application-dev.yaml
   - bootstrap-project.yaml
+  - policy-validation-configmap.yaml
