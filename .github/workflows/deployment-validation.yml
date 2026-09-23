@@ -72,9 +72,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-        shell: bash
-        run: |
-          set -euo pipefail
 
           KUBECONFORM_VERSION="v0.8.0"
 
