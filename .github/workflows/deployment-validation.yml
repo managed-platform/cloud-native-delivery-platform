@@ -46,8 +46,14 @@ jobs:
             echo "argocd=false" >> "$GITHUB_OUTPUT"
           fi
 
+          if grep -q '^ingress/' <<< "$changed_files"; then
+            echo "ingress=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ingress=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Verify kubectl
-        if: steps.changes.outputs.deploy == 'true'
+        if: steps.changes.outputs.deploy == 'true' || steps.changes.outputs.argocd == 'true' || steps.changes.outputs.ingress == 'true'
         run: kubectl version --client
 
       - name: Render DEV manifests
@@ -62,7 +68,7 @@ jobs:
           cat /tmp/dev-manifests.yaml
 
       - name: Install kubeconform
-        if: steps.changes.outputs.deploy == 'true' || steps.changes.outputs.argocd == 'true'
+        if: steps.changes.outputs.deploy == 'true' || steps.changes.outputs.argocd == 'true' || steps.changes.outputs.ingress == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -108,3 +114,26 @@ jobs:
             argocd/project.yaml \
             argocd/bootstrap-application.yaml \
             argocd/bootstrap-project.yaml
+
+      - name: Validate ingress manifests
+        if: steps.changes.outputs.ingress == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -d '' -t manifests < <(
+            find ingress -type f \( -name '*.yaml' -o -name '*.yml' \) -print0
+          )
+
+          if (( ${#manifests[@]} == 0 )); then
+            echo "No ingress manifests found."
+            exit 1
+          fi
+
+          kubeconform \
+            -strict \
+            -summary \
+            -kubernetes-version 1.30.14 \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/CustomResourceDefinition/catalog/main/schema/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            "${manifests[@]}"
