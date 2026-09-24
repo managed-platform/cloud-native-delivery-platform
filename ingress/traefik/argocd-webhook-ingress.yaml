@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-webhook
+  namespace: argocd
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
+spec:
+  ingressClassName: cloud-native-platform-traefik
+  tls:
+    - hosts:
+        - webhook.167-86-82-70.sslip.io
+  rules:
+    - host: webhook.167-86-82-70.sslip.io
+      http:
+        paths:
+          - path: /api/webhook
+            pathType: Exact
+            backend:
+              service:
+                name: argocd-webhook-backend
+                port:
+                  number: 443
