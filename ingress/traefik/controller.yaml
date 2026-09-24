@@ -28,6 +28,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 65532
         runAsGroup: 65532
+        fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -40,9 +41,18 @@ spec:
             - --providers.kubernetesingress.ingressclass=cloud-native-platform-traefik
             - --entrypoints.web.address=:8000
             - --entrypoints.health.address=:8082
+            - --entrypoints.websecure.address=:8443
+            - --certificatesresolvers.letsencrypt.acme.storage=/data/acme.json
+            - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+            - --providers.file.filename=/etc/traefik/dynamic/dynamic.yaml
+            - --providers.kubernetesingress.crossprovidernamespaces=argocd
             - --ping=true
             - --ping.entrypoint=health
           ports:
+            - name: websecure
+              containerPort: 8443
+              hostPort: 443
+              protocol: TCP
             - name: web
               containerPort: 8000
               protocol: TCP
@@ -74,9 +84,20 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: acme
+              mountPath: /data
+            - name: argocd-webhook-transport
+              mountPath: /etc/traefik/dynamic
+              readOnly: true
       volumes:
         - name: tmp
           emptyDir: {}
+        - name: acme
+          persistentVolumeClaim:
+            claimName: cloud-native-platform-traefik-acme
+        - name: argocd-webhook-transport
+          configMap:
+            name: argocd-webhook-transport
 ---
 apiVersion: v1
 kind: Service

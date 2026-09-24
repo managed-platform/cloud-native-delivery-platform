@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-webhook-transport
+  namespace: traefik
+data:
+  dynamic.yaml: |
+    http:
+      serversTransports:
+        argocd-webhook:
+          serverName: argocd-server.argocd.svc.cluster.local
+          rootCAs:
+            - /etc/traefik/dynamic/argocd-ca.crt
+  argocd-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDYzCCAkugAwIBAgIRAIDbyKlrdxBil/M/LEcVEMkwDQYJKoZIhvcNAQELBQAw
+    EjEQMA4GA1UEChMHQXJnbyBDRDAeFw0yNjAyMDkwNDE4MTBaFw0yNzAyMDkwNDE4
+    MTBaMBIxEDAOBgNVBAoTB0FyZ28gQ0QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+    ggEKAoIBAQDZUUk3bIKe/XfgZrwwRBix7M2T9w5hHn3awqbes0ismHAaeMr2A4tJ
+    bvmBxbW5Drr/JRkz/ULT9g/Tb3o19Pk1c0IggCwVvdnc/U/cJ9+fWwdUgjRkZn2Y
+    D1XGSW3DYRhdatNvLrWG2vHAxQyffCRFwFQiYoRDLptg2l8fNSOcw+cGAo0f2Btb
+    UiZJ8D0RgbHsFBulALDK2UySaSQzTPL33CI13uW7aXpoQy2joOfh24+ju68DpDs5
+    hNRDOKAI8sYwwpLNSQlQlamLoaoI3PZ1vMLxnxsu0qVg4l9uksEPrftUm4Zi3JgN
+    NG0vs5+uJJw8ABR7VWpgghSUMEmqMsrFAgMBAAGjgbMwgbAwDgYDVR0PAQH/BAQD
+    AgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMBMAwGA1UdEwEB/wQCMAAwewYDVR0RBHQw
+    coIJbG9jYWxob3N0gg1hcmdvY2Qtc2VydmVyghRhcmdvY2Qtc2VydmVyLmFyZ29j
+    ZIIYYXJnb2NkLXNlcnZlci5hcmdvY2Quc3ZjgiZhcmdvY2Qtc2VydmVyLmFyZ29j
+    ZC5zdmMuY2x1c3Rlci5sb2NhbDANBgkqhkiG9w0BAQsFAAOCAQEAca6v4JkBELpD
+    +NBROEVDZCpvJGPqwOjOKhmcAv4XXMsb+b/GrgLStzAS4T9LLYf6nPMixpmwhW6w
+    6PkCyxYVAGQFp3C2QLkTFCHRQSk6PwV95ZVHE47YKOFcY8gu1oGqISvVllEIskmL
+    j4P07biVHBeeXzzY3acNRiQsyF3j1lrcNX79WuubU9Jji/7D7ERJUVE0D2ICL0lm
+    tP1V8MsaTNl3oxuI05FaVv2GRkDxKqDlrZyBe/P54F91D5lVORwZjvNeklzvL3r5
+    51ff/OMPrbw+QMuvmm9sSnf5Z2C44QVTUazv7meViJBRNiM6nbq4tUi585EtlHlV
+    FQ5ZKznFWQ==
+    -----END CERTIFICATE-----

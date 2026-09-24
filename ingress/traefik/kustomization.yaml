@@ -4,3 +4,7 @@ kind: Kustomization
 resources:
   - rbac.yaml
   - controller.yaml
+  - acme-storage.yaml
+  - argocd-webhook-ingress.yaml
+  - argocd-webhook-backend.yaml
+  - argocd-webhook-transport.yaml
