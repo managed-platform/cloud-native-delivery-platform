@@ -48,6 +48,7 @@ spec:
             - --providers.kubernetesingress.crossprovidernamespaces=argocd
             - --ping=true
             - --ping.entrypoint=health
+            - --providers.kubernetesingress.ingressendpoint.ip=167.86.82.70
           ports:
             - name: websecure
               containerPort: 8443
